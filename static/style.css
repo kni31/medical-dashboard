@@ -1,0 +1,92 @@
+:root {
+    --bg-color: #f5f7f9;
+    --text-color: #333;
+    --container-bg: white;
+    --shadow: rgba(0,0,0,0.05);
+    --chart-shadow: rgba(0,0,0,0.08);
+    --filter-bg: white;
+}
+
+/* 다크 모드 속성이 활성화되었을 때의 색상 */
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --container-bg: #2d2d2d;
+    --shadow: rgba(0,0,0,0.3);
+    --chart-shadow: rgba(0,0,0,0.4);
+    --filter-bg: #333;
+}
+
+body {
+    font-family: 'Malgun Gothic', sans-serif;
+    margin: 30px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* 우측 상단 다크모드 버튼 스타일 */
+.theme-switch-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+#theme-toggle {
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: var(--filter-bg);
+    color: var(--text-color);
+    font-weight: bold;
+    box-shadow: 0 2px 5px var(--shadow);
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    background: var(--filter-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+select, button.btn-search {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: var(--container-bg);
+    color: var(--text-color);
+}
+
+button.btn-search {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.chart-box {
+    background: var(--container-bg);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px var(--chart-shadow);
+}
