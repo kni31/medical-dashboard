@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>의료비 분석 대시보드</h1>
+
+<div style="width: 700px;">
+
+    <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('myChart');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ labels | safe }},
+        datasets: [{
+            label: '평균 의료비',
+            data: {{ values | safe }},
+            borderWidth: 1
+        }]
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>관리자 페이지</h2>
+
+<p>관리자 계정으로 로그인한 경우에만 접근 가능합니다. 추가한 데이터는 <code>data/admin_data.csv</code>에 저장되며, 대시보드에 반영됩니다.</p>
+
+{% if errors %}
+<div class="alert alert-danger">
+    <ul class="mb-0">
+        {% for error in errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="POST">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">지역</label>
+            <select name="region" class="form-select" required>
+                <option value="">선택하세요</option>
+                {% for region in regions %}
+                <option value="{{ region }}">{{ region }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">진료과</label>
+            <select name="disease" class="form-select" required>
+                <option value="">선택하세요</option>
+                {% for disease in diseases %}
+                <option value="{{ disease }}">{{ disease }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">성별</label>
+            <select name="gender" class="form-select" required>
+                <option value="">선택하세요</option>
+                <option value="남성">남성</option>
+                <option value="여성">여성</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">나이</label>
+            <input type="number" min="0" max="99" name="age" class="form-control" placeholder="0~99" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">진료비 (원)</label>
+            <input type="number" min="0" step="1" name="total_cost" class="form-control" placeholder="예: 1200000" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">환자수</label>
+            <input type="number" min="1" name="patients" class="form-control" placeholder="기본값 1">
+            <div class="form-text">비워두면 1로 저장됩니다.</div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">진료횟수</label>
+            <input type="number" min="1" name="visit_count" class="form-control" placeholder="예: 5">
+            <div class="form-text">선택입력이며 미입력 시 1로 저장됩니다.</div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">데이터 추가</button>
+</form>
+
+{% if admin_entries %}
+<div class="card mt-4">
+    <div class="card-header">관리자 추가 데이터</div>
+    <div class="table-responsive">
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>지역</th>
+                    <th>진료과</th>
+                    <th>성별</th>
+                    <th>나이</th>
+                    <th>환자수</th>
+                    <th>진료횟수</th>
+                    <th>진료비</th>
+                    <th>삭제</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in admin_entries %}
+                <tr>
+                    <td>{{ row.region }}</td>
+                    <td>{{ row.disease }}</td>
+                    <td>{{ row.gender }}</td>
+                    <td>{{ row.age }}</td>
+                    <td>{{ row.patients }}</td>
+                    <td>{{ row.visit_count if row.visit_count is not none else 0 }}</td>
+                    <td>{{ '{:,}'.format(row.total_cost) }}</td>
+                    <td>
+                        <form method="POST" class="d-inline">
+                            <input type="hidden" name="delete_index" value="{{ loop.index0 }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('선택한 행을 삭제하시겠습니까?');">
+                                삭제
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

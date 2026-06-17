@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>내 정보 입력</h2>
+
+<form method="POST" novalidate>
+    <div class="mb-3">
+        <label class="form-label">성별</label>
+        <select name="gender" class="form-select" required>
+            <option value="">선택하세요</option>
+            <option value="남성" {% if selected_gender == '남성' %}selected{% endif %}>남성</option>
+            <option value="여성" {% if selected_gender == '여성' %}selected{% endif %}>여성</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">나이</label>
+        <input type="number" min="0" max="99" name="age" value="{{ selected_age if selected_age is not none else '' }}" class="form-control" placeholder="0부터 99 사이" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">지역</label>
+        <div class="region-checkboxes row gy-2">
+            {% for region in regions %}
+            <div class="col-6 col-md-4">
+                <label class="form-check form-check-inline w-100">
+                    <input class="form-check-input region-checkbox" type="checkbox" name="region" value="{{ region }}" {% if selected_region == region %}checked{% endif %}>
+                    <span class="form-check-label">{{ region }}</span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="form-text">한 곳만 선택해주세요.</div>
+    </div>
+
+    <hr>
+    <h5>선택사항 (입력 시 개인 수치로 랭킹 산출)</h5>
+    <div class="mb-3">
+        <label class="form-label">연간 진료횟수 (선택)</label>
+        <input type="number" min="0" name="personal_visits" class="form-control" placeholder="예: 3">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">연간 총 진료비 (원, 선택)</label>
+        <input type="number" min="0" step="1" name="personal_total_cost" class="form-control" placeholder="예: 1200000">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">진료과목 (선택)</label>
+        <select name="personal_disease" class="form-select">
+            <option value="">선택 안함</option>
+            {% for d in diseases %}
+            <option value="{{ d }}">{{ d }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button class="btn btn-success" type="submit">저장하고 분석하기</button>
+</form>
+
+{% if analysis %}
+<div class="card mt-4">
+    <div class="card-body">
+        <h4 class="card-title">나의 분석 결과</h4>
+        <p class="card-text">
+            선택 정보: <strong>{{ analysis.profile.gender }}</strong>, <strong>{{ analysis.profile.age }}세 ({{ analysis.profile.age_group }})</strong>, <strong>{{ analysis.profile.region }}</strong>
+        </p>
+        <p class="card-text">
+            해당 그룹의 1인당 평균 진료비는 <strong>{{ '{:,}'.format(analysis.user_avg_cost) }}원</strong>이며,
+            전체 그룹 대비 상위 <strong>{{ analysis.top_percent }}%</strong> 수준입니다.
+        </p>
+        {% if analysis.user_visit_count is not none %}
+        <p class="card-text">
+            연간 진료횟수는 <strong>{{ '{:.1f}'.format(analysis.user_visit_count) }}</strong>회로,
+            전체 그룹 대비 상위 <strong>{{ analysis.visit_top_percent if analysis.visit_top_percent is not none else 'N/A' }}%</strong> 수준입니다.
+        </p>
+        {% endif %}
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">동일 연령대 평균: <strong>{{ '{:,}'.format(analysis.age_group_avg_cost) }}원</strong></li>
+            <li class="list-group-item">동일 지역 평균: <strong>{{ '{:,}'.format(analysis.region_avg_cost) }}원</strong></li>
+            <li class="list-group-item">동일 성별·연령대 평균: <strong>{{ '{:,}'.format(analysis.gender_age_avg_cost) }}원</strong></li>
+            <li class="list-group-item">전체 평균: <strong>{{ '{:,}'.format(analysis.overall_avg_cost) }}원</strong></li>
+        </ul>
+        {% if not analysis.user_group_exists %}
+        <div class="alert alert-warning mt-3">
+            선택한 성별/연령대/지역 조합에서 정확한 데이터가 없어 가장 유사한 기준으로 분석했습니다.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+const checkboxes = document.querySelectorAll('.region-checkbox');
+checkboxes.forEach(box => {
+    box.addEventListener('change', () => {
+        if (box.checked) {
+            checkboxes.forEach(other => {
+                if (other !== box) {
+                    other.checked = false;
+                }
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}
